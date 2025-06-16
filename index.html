@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TranslateBot</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/854/854894.png" type="image/png">
+
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0f4f8;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      color: #333333;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    h2 img {
+      width: 24px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    textarea, select, button {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    textarea:focus, select:focus, button:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      border: none;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005ecb;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #007bff;
+      border-radius: 6px;
+      min-height: 60px;
+      white-space: pre-line;
+      color: #222;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 10px;
+    }
+
+    .loader {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      textarea, select, button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>
+      <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" alt="chat icon">
+      TranslateBot
+    </h2>
+
+    <textarea id="inputText" rows="4" placeholder="Type in English, Hindi, or Telugu..."></textarea>
+
+    <!-- From Language Dropdown -->
+<!-- From Language Dropdown -->
+<select id="fromLang" required>
+  <option value="" disabled selected hidden>From</option>
+  <option value="en">English</option>
+  <option value="hi">Hindi</option>
+  <option value="te">Telugu</option>
+</select>
+
+<!-- To Language Dropdown -->
+<select id="toLang" required>
+  <option value="" disabled selected hidden>To</option>
+  <option value="en">English</option>
+  <option value="hi">Hindi</option>
+  <option value="te">Telugu</option>
+</select>
+
+
+
+    <button onclick="translateText()">Translate</button>
+
+    <div class="loader" id="loader"></div>
+    <div class="output" id="outputBox">Translated Text</div>
+
+    <div class="footer">Built by Vaishnavi with ChatGPT</div>
+  </div>
+
+  <script>
+    async function translateText() {
+      const text = document.getElementById('inputText').value.trim();
+      const fromLang = document.getElementById('fromLang').value;
+      const toLang = document.getElementById('toLang').value;
+      const outputBox = document.getElementById('outputBox');
+      const loader = document.getElementById('loader');
+
+      if (!text) {
+        outputBox.innerText = "Please enter some text to translate.";
+        return;
+      }
+
+      loader.style.display = "block";
+      outputBox.style.display = "none";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/translate/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text, from_lang: fromLang, to_lang: toLang })
+        });
+
+        const result = await response.json();
+        outputBox.innerText = result.translated_text || `Error: ${result.error}`;
+      } catch (error) {
+        outputBox.innerText = "Could not connect to FastAPI. Is it running?";
+      } finally {
+        loader.style.display = "none";
+        outputBox.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>

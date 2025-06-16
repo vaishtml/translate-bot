@@ -2,8 +2,8 @@ services:
   - type: web
     name: translate-api
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn chatbot:app --host 0.0.0.0 --port 10000
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "./start.sh"
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10"
+        value: 3.12

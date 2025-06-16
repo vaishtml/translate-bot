@@ -29,9 +29,9 @@ async def translate(request: TranslationRequest):
     except Exception as e:
         return {"error": str(e)}
 
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse
 import os
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=FileResponse)
 async def serve_index():
-    return FileResponse(os.path.join(os.path.dirname(__file__), "index.html"))
+    return FileResponse(os.path.join("static", "index.html"))
